@@ -61,29 +61,6 @@ export default function StatusPage() {
   );
 }
 
-function ShowData() {
-  const { data } = useSWR("/api/v1/status", fetchAPI, {
-    refreshInterval: 2000,
-  });
-
-  return (
-    <>
-      <pre className="data">{JSON.stringify(data, null, 2)}</pre>
-      <style jsx>{`
-        .data {
-          background: #ffffff;
-          border: 1px solid #dfe3e0;
-          border-radius: 6px;
-          padding: 1rem 1.25rem;
-          font-size: 0.85rem;
-          line-height: 1.6;
-          overflow-x: auto;
-        }
-      `}</style>
-    </>
-  );
-}
-
 function UpdateAt() {
   const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 2000,
@@ -103,6 +80,49 @@ function UpdateAt() {
           font-size: 0.8rem;
           color: #5c625e;
           margin: 0 0 1.5rem;
+        }
+      `}</style>
+    </>
+  );
+}
+
+function ShowData() {
+  const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
+    refreshInterval: 2000,
+  });
+
+  let databaseStatusInformation = "Carregando...";
+
+  if (!isLoading && data) {
+    databaseStatusInformation = (
+      <>
+        <div>Versão: {data.dependencies.database.version}</div>
+        <div>
+          Conexões abertas: {data.dependencies.database.opened_connections}
+        </div>
+        <div>
+          Conexões máximas: {data.dependencies.database.max_connections}
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="data">
+        <h2>Database</h2>
+        <div>{databaseStatusInformation}</div>
+      </div>
+      <style jsx>{`
+        .data {
+          background: #ffffff;
+          border: 1px solid #dfe3e0;
+          border-radius: 6px;
+          padding: 1rem 1.25rem;
+        }
+        h2 {
+          font-size: 0.95rem;
+          margin: 0 0 0.75rem;
         }
       `}</style>
     </>
